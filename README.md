@@ -51,3 +51,4 @@ Pronto!
 
 
 ### Correções de Bugs
+1. Inclusão do arquivo de testes;

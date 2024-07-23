@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -130,11 +131,10 @@ func SearchLocation(cep string) (string, error) {
 		return "", err
 	}
 
-	// CASO NÃO ENCONTRE O CEP
 	if data.Cep != "" {
 		return data.City, nil
 	} else {
-		return "", nil
+		return "", errors.New("can not find zipcode")
 	}
 }
 
@@ -143,13 +143,13 @@ func GetTemperature(city string) (float64, error) {
 
 	result, err := requestGetUrl("http://api.weatherapi.com/v1/current.json?key=" + ApiKey + "&q=" + city + "&aqi=no")
 	if err != nil {
-		return 0, err
+		return 0, errors.New("city not found")
 	}
 
 	var u WeatherApi
 	err = json.Unmarshal(result, &u)
 	if err != nil {
-		return 0, err
+		return 0, errors.New("city not found")
 	}
 	return u.Current.TempC, err
 }
@@ -185,10 +185,10 @@ func convertZipcode(zipcode string) (string, error) {
 		return "", err
 	}
 	if !match {
-		return "", err
+		return "", errors.New("invalid zipcode")
 	}
 	if zipcode == "" || len(zipcode) != 8 {
-		return "", err
+		return "", errors.New("invalid zipcode")
 	}
 	return zipcode, nil
 }
